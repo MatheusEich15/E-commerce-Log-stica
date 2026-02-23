@@ -30,6 +30,12 @@ public class Cliente {
         this.estado = estado;
     }
 
+    public Cliente(int id, String nome, String cpfCnpj) {
+        this.id = id;
+        this.nome = nome;
+        this.cpfCnpj = cpfCnpj;
+    }
+
     public int getId() {
         return id;
     }
@@ -76,5 +82,9 @@ public class Cliente {
 
     public void setEstado(String estado) {
         this.estado = estado;
+    }
+
+    public String toStringBasico() {
+        return "\nID: " + getId() + "\nNOME: " + getNome() + "\nCPF/CNPJ: " + getCpfCnpj() + "\n<>---------------------------<>";
     }
 }

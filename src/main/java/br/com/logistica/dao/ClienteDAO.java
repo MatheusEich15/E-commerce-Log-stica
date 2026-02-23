@@ -6,7 +6,10 @@ import br.com.logistica.util.Conexao;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
 
 public class ClienteDAO {
     public void cadastrarCliente (Cliente cliente)throws SQLException {
@@ -26,5 +29,28 @@ public class ClienteDAO {
 
             stmt.executeUpdate();
         }
+    }
+
+    public List<Cliente> listarClientesBasico() throws SQLException {
+        List<Cliente> clientes = new ArrayList<>();
+        String command = """
+                SELECT
+                id,
+                nome,
+                cpf_cnpj
+                FROM Cliente
+                """;
+        try (Connection conn = Conexao.conectar()) {
+            PreparedStatement stmt = conn.prepareStatement(command);
+            ResultSet rs = stmt.executeQuery();
+            while (rs.next()) {
+                clientes.add(new Cliente(
+                        rs.getInt("id"),
+                        rs.getString("nome"),
+                        rs.getString("cpf_cnpj")
+                ));
+            }
+        }
+        return clientes;
     }
 }

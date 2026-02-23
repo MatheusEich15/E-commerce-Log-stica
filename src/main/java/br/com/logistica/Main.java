@@ -8,6 +8,8 @@ import br.com.logistica.model.Pedido;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Timestamp;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Scanner;
 
 //TIP To <b>Run</b> code, press <shortcut actionId="Run"/> or
@@ -35,7 +37,7 @@ public class Main {
                     9 - Relatório: Clientes com Maior Volume Entregue
                     10 - Relatório: Pedidos Pendentes por Estado
                     11 - Relatório: Entregas Atrasadas por Cidade
-                    12 - BuSCar Pedido por CPF/CNPJ do Cliente
+                    12 - Buscar Pedido por CPF/CNPJ do Cliente
                     13 - Cancelar Pedido
                     14 - Excluir Entrega
                     15 - Excluir Cliente
@@ -198,6 +200,7 @@ public class Main {
     }
 
     public static void criarPedido() {
+        List<Cliente> clientes = new ArrayList<>();
         System.out.println("Tem certeza que deseja criar um novo pedido?" +
                 "\n1 - SIM" +
                 "\n2 - NÃO");
@@ -205,7 +208,16 @@ public class Main {
         switch (opcao) {
             case 1: {
                 SC.nextLine();
-                System.out.println("Insira o id do cliente:");
+                try {
+                    clientes = CLIENTEDAO.listarClientesBasico();
+                } catch (SQLException e) {
+                    System.out.println("Erro ao conectar com o banco de dados!");
+                    e.printStackTrace();
+                }
+                for (Cliente cliente : clientes) {
+                    System.out.println(cliente.toStringBasico());
+                }
+                System.out.println("\nInsira o id do cliente:");
                 int clienteId = SC.nextInt();
                 System.out.println("Insira o volume do pedido (m³):");
                 double volumeM3 = SC.nextDouble();
