@@ -1,11 +1,11 @@
 package br.com.logistica;
 
+import br.com.logistica.dto.*;
+import br.com.logistica.enums.StatusEntrega;
 import br.com.logistica.dao.*;
-import br.com.logistica.model.Cliente;
-import br.com.logistica.model.Motorista;
-import br.com.logistica.model.Pedido;
+import br.com.logistica.enums.StatusPedido;
+import br.com.logistica.model.*;
 
-import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.util.ArrayList;
@@ -61,39 +61,39 @@ public class Main {
                     break;
                 }
                 case 4: {
-                    //atribuirPedidoMotorista();
+                    atribuirPedidoMotorista();
                     break;
                 }
                 case 5: {
-                    //registrarEventoEntrega();
+                    registrarEventoEntrega();
                     break;
                 }
                 case 6: {
-                    //atualizarStatusEntrega();
+                    atualizarStatusEntrega();
                     break;
                 }
                 case 7: {
-                    //registrarTodasEntregasClienteMotorista();
+                    listarTodasEntregasClienteMotorista();
                     break;
                 }
                 case 8: {
-                    //relatorioTotalEntregasMotorista();
+                    relatorioTotalEntregasMotorista();
                     break;
                 }
                 case 9: {
-                    //relatorioClienteMaiorVolumeEntregue();
+                    relatorioClienteMaiorVolumeEntregue();
                     break;
                 }
                 case 10: {
-                    //relatorioPedidosPendentesEstado();
+                    relatorioPedidosPendentesEstado();
                     break;
                 }
                 case 11: {
-                    //relatorioEntregasAtrasadasCidade();
+                    relatorioEntregasAtrasadasCidade();
                     break;
                 }
                 case 12: {
-                    //buSCarPedidoCPFCliente();
+                    buscarPedidoCPFCliente();
                     break;
                 }
                 case 13: {
@@ -217,7 +217,7 @@ public class Main {
                 for (Cliente cliente : clientes) {
                     System.out.println(cliente.toStringBasico());
                 }
-                System.out.println("\nInsira o id do cliente:");
+                System.out.println("\nInsira o ID do cliente:");
                 int clienteId = SC.nextInt();
                 System.out.println("Insira o volume do pedido (m³):");
                 double volumeM3 = SC.nextDouble();
@@ -243,6 +243,323 @@ public class Main {
                 System.out.println("ERRO!!!");
                 break;
             }
+        }
+    }
+
+    public static void atribuirPedidoMotorista() {
+        List<Pedido> pedidos = new ArrayList<>();
+        List<Motorista> motoristas = new ArrayList<>();
+        System.out.println("Tem certeza que deseja atribuir um pedido a um motorista?" +
+                "\n1 - SIM" +
+                "\n2 - NÃO");
+        int opcao = SC.nextInt();
+        switch (opcao) {
+            case 1: {
+                try {
+                    pedidos = PEDIDODAO.listarPedidos();
+                } catch (SQLException e) {
+                    System.out.println("Erro ao conectar com o banco de dados!");
+                    e.printStackTrace();
+                }
+                for (Pedido pedido : pedidos) {
+                    System.out.println(pedido.toString());
+                }
+                System.out.println("Insira o ID do pedido:");
+                int pedidoId = SC.nextInt();
+                try {
+                    motoristas = MOTORISTADAO.listarMotoristas();
+                } catch (SQLException e) {
+                    System.out.println("Erro ao conectar com o banco de dados!");
+                    e.printStackTrace();
+                }
+                for (Motorista motorista : motoristas) {
+                    System.out.println(motorista.toString());
+                }
+                System.out.println("Insira o ID do motorista:");
+                int motoristaId = SC.nextInt();
+                Timestamp dataSaida = new Timestamp(System.currentTimeMillis());
+                String status = "EM_ROTA";
+                System.out.println("Tem certeza que deseja atribuir este pedido ao motorista?" +
+                        "\n1 - SIM" +
+                        "\n2 - NÃO");
+                int confirma = SC.nextInt();
+                switch (confirma) {
+                    case 1: {
+                        Entrega entrega = new Entrega(pedidoId, motoristaId, dataSaida, status);
+                        try {
+                            ENTREGADAO.criarEntrega(entrega);
+                            System.out.println("Pedido atribuido ao motorista e foi enviado!");
+                        } catch (Exception e) {
+                            System.out.println("Erro ao conectar com o banco de dados!");
+                            e.printStackTrace();
+                        }
+                    }
+                    case 2: {
+                        System.out.println("Retornando ao menu...");
+                        return;
+                    }
+                    default: {
+                        System.out.println("ERRO!!!");
+                        break;
+                    }
+                }
+                break;
+            }
+            case 2: {
+                System.out.println("Retornando ao menu...");
+                return;
+            }
+            default: {
+                System.out.println("ERRO!!!");
+                break;
+            }
+        }
+    }
+
+    public static void registrarEventoEntrega() {
+        List<Entrega> entregas = new ArrayList<>();
+        System.out.println("Tem certeza que deseja registrar um evento?" +
+                "\n1 - SIM" +
+                "\n2 - NÃO");
+        int opcao = SC.nextInt();
+        switch (opcao) {
+            case 1: {
+                try {
+                    entregas = ENTREGADAO.listarEntregas();
+                } catch (SQLException e) {
+                    System.out.println("Erro ao conectar com o banco de dados!");
+                    e.printStackTrace();
+                }
+                for (Entrega entrega : entregas) {
+                    System.out.println(entrega.toString());
+                }
+                System.out.println("Insira o ID da entrega:");
+                int entregaId = SC.nextInt();
+                Timestamp dataEvento = new Timestamp(System.currentTimeMillis());
+                SC.nextLine();
+                System.out.println("Insira uma descrição do acontecido:");
+                String descricao = SC.nextLine();
+                System.out.println("Tem certeza de que deseja registrar este evento?\n" +
+                        "1 - SIM\n" +
+                        "2 - NÃO");
+                int confirma = SC.nextInt();
+                switch (confirma) {
+                    case 1: {
+                        HistoricoEntrega historicoEntrega = new HistoricoEntrega(entregaId, dataEvento, descricao);
+                        try {
+                            HISTORICOENTREGADAO.criarHistoricoEntrega(historicoEntrega);
+                            System.out.println("evento registrado!");
+                        } catch (Exception e) {
+                            System.out.println("Erro ao conectar com o banco de dados!");
+                            e.printStackTrace();
+                        }
+                        break;
+                    }
+                    case 2: {
+                        System.out.println("Retornando ao menu...");
+                        return;
+                    }
+                    default: {
+                        System.out.println("ERRO!!!");
+                        break;
+                    }
+                }
+                break;
+            }
+            case 2: {
+                System.out.println("Retornando ao menu...");
+                return;
+            }
+            default: {
+                System.out.println("ERRO!!!");
+                break;
+            }
+        }
+    }
+
+    public static void atualizarStatusEntrega() {
+        List<Entrega> entregas = new ArrayList<>();
+        StatusEntrega statusEntregaSelecionado = StatusEntrega.EMROTA;
+        System.out.println("Tem certeza que deseja atualizar o status de uma entrega?" +
+                "\n1 - SIM" +
+                "\n2 - NÃO");
+        int opcao = SC.nextInt();
+        switch (opcao) {
+            case 1: {
+                try {
+                    entregas = ENTREGADAO.listarEntregas();
+                } catch (Exception e) {
+                    System.out.println("Erro ao conectar com o banco de dados!");
+                    e.printStackTrace();
+                }
+                for (Entrega entrega : entregas) {
+                    System.out.println(entrega.toString());
+                }
+                System.out.println("Insira o ID da entrega:");
+                int entregaId = SC.nextInt();
+                int pedidoId = 0;
+                for (Entrega entrega : entregas) {
+                    if (entregaId == entrega.getId()) {
+                        pedidoId = entrega.getPedidoId();
+                    }
+                }
+                Timestamp data_entrega = new Timestamp(System.currentTimeMillis());
+                int index;
+                int status;
+                do {
+                    index = 1;
+                    for (StatusEntrega statusEntrega : StatusEntrega.values()){
+                        System.out.println(index + " - " + statusEntrega.getName());
+                        index++;
+                    }
+                    System.out.println("Insira o status da entrega:");
+                    status = SC.nextInt();
+                    switch (status) {
+                        case 1: {
+                            statusEntregaSelecionado = StatusEntrega.EMROTA;
+                            break;
+                        }
+                        case 2: {
+                            statusEntregaSelecionado = StatusEntrega.ENTREGUE;
+                            break;
+                        }
+                        case 3: {
+                            statusEntregaSelecionado = StatusEntrega.ATRASADA;
+                            break;
+                        }
+                        default: {
+                            System.out.println("ERRO!!!");
+                            break;
+                        }
+                    }
+                } while (status < 1 || status > 3);
+                System.out.println("Tem certeza de que deseja atualizar esta estrega?\n" +
+                        "1 - SIM\n" +
+                        "2 - NÃO");
+                int confirma = SC.nextInt();
+                switch (confirma) {
+                    case 1: {
+                        Entrega entrega = new Entrega(data_entrega, statusEntregaSelecionado.getName(), entregaId);
+                        Pedido pedido = new Pedido(StatusPedido.ENTREGUE.getName(), pedidoId);
+                        try {
+                            ENTREGADAO.atualizarEntrega(entrega);
+                            PEDIDODAO.atualizarPedido(pedido);
+                            System.out.println("Entrega atualizada!");
+                        } catch (Exception e) {
+                            System.out.println("Erro ao conectar com o banco de dados!");
+                            e.printStackTrace();
+                        }
+                        break;
+                    }
+                    case 2: {
+                        System.out.println("Retornando ao menu...");
+                        return;
+                    }
+                    default: {
+                        System.out.println("ERRO!!!");
+                        break;
+                    }
+                }
+                break;
+            }
+            case 2: {
+                System.out.println("Retornando ao menu...");
+                return;
+            }
+            default: {
+                System.out.println("ERRO!!!");
+                break;
+            }
+        }
+    }
+
+    public static void listarTodasEntregasClienteMotorista() {
+        List<EntregaDetalhadaDTO> entregaDetalhadaDTOS = new ArrayList<>();
+        try {
+            entregaDetalhadaDTOS = ENTREGADAO.listarEntregaClienteMotorista();
+        } catch (Exception e) {
+            System.out.println("Erro ao conectar com o banco de dados!");
+            e.printStackTrace();
+        }
+        for (EntregaDetalhadaDTO entregaDetalhadaDTO : entregaDetalhadaDTOS) {
+            System.out.println(entregaDetalhadaDTO);
+        }
+    }
+
+    public static void relatorioTotalEntregasMotorista() {
+        List<RelatorioEntregaMotoristaDTO> relatorioEntregaMotoristaDTOS = new ArrayList<>();
+        try {
+            relatorioEntregaMotoristaDTOS = MOTORISTADAO.listarEntregaMotorista();
+        } catch (Exception e) {
+            System.out.println("Erro ao conectar com o banco de dados!");
+            e.printStackTrace();
+        }
+        for (RelatorioEntregaMotoristaDTO relatorioEntregaMotoristaDTO : relatorioEntregaMotoristaDTOS) {
+            System.out.println(relatorioEntregaMotoristaDTO);
+        }
+    }
+
+    public static void relatorioClienteMaiorVolumeEntregue() {
+        List<RelatorioClienteVolumeDTO> relatorioClienteVolumeDTOS = new ArrayList<>();
+        try {
+            relatorioClienteVolumeDTOS = CLIENTEDAO.listarClienteVolume();
+        } catch (Exception e) {
+            System.out.println("Erro ao conectar com o banco de dados!");
+            e.printStackTrace();
+        }
+        for (RelatorioClienteVolumeDTO relatorioClienteVolumeDTO : relatorioClienteVolumeDTOS) {
+            System.out.println(relatorioClienteVolumeDTO);
+        }
+    }
+
+    public static void relatorioPedidosPendentesEstado() {
+        List<RelatorioPedidoEstadoDTO> relatorioPedidoEstadoDTOS = new ArrayList<>();
+        try {
+            relatorioPedidoEstadoDTOS = PEDIDODAO.listarPedidoEstado();
+        } catch (Exception e) {
+            System.out.println("Erro ao conectar com o banco de dados!");
+            e.printStackTrace();
+        }
+        for (RelatorioPedidoEstadoDTO relatorioPedidoEstadoDTO : relatorioPedidoEstadoDTOS) {
+            System.out.println(relatorioPedidoEstadoDTO);
+        }
+    }
+
+    public static void relatorioEntregasAtrasadasCidade() {
+        List<RelatorioEntregasAtrasadasDTO> relatorioEntregasAtrasadasDTOS = new ArrayList<>();
+        try {
+            relatorioEntregasAtrasadasDTOS = ENTREGADAO.listarEntregasAtrasadas();
+        } catch (Exception e) {
+            System.out.println("Erro ao conectar com o banco de dados!");
+            e.printStackTrace();
+        }
+        for (RelatorioEntregasAtrasadasDTO relatorioEntregasAtrasadasDTO : relatorioEntregasAtrasadasDTOS) {
+            System.out.println(relatorioEntregasAtrasadasDTO);
+        }
+    }
+
+    public static void buscarPedidoCPFCliente() {
+        List<BuscarPedidoCPFDTO> buscarPedidoCPFDTOS = new ArrayList<>();
+        List<Cliente> clientes = new ArrayList<>();
+        try {
+            clientes = CLIENTEDAO.listarClientesBasico();
+        } catch (Exception e) {
+            System.out.println("Erro ao conectar com o banco de dados!");
+            e.printStackTrace();
+        }
+        for (Cliente cliente : clientes) {
+            System.out.println(cliente.toStringBasico());
+        }
+        System.out.println("Insira o CPF do cliente: ");
+        String CPF = SC.nextLine();
+        try {
+            buscarPedidoCPFDTOS = PEDIDODAO.buscarPedidoCPF();
+        } catch (Exception e) {
+            System.out.println("Erro ao conectar com o banco de dados!");
+            e.printStackTrace();
+        }
+        for (BuscarPedidoCPFDTO buscarPedidoCPFDTO : buscarPedidoCPFDTOS) {
+            System.out.println(buscarPedidoCPFDTO);
         }
     }
 }

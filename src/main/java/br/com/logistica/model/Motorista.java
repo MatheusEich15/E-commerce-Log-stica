@@ -65,4 +65,9 @@ public class Motorista {
     public void setCidadeBase(String cidadeBase) {
         this.cidadeBase = cidadeBase;
     }
+
+    @Override
+    public String toString() {
+        return "\nID: " + getId() + "\nNOME: " + getNome() +"\nCNH: " + getCnh() +"\nVEÍCULO: " + getVeiculo() +"\nCIDADE BASE: " + getCidadeBase() + "\n<>---------------------------<>";
+    }
 }

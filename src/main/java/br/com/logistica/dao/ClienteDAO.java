@@ -1,5 +1,6 @@
 package br.com.logistica.dao;
 
+import br.com.logistica.dto.RelatorioClienteVolumeDTO;
 import br.com.logistica.model.Cliente;
 import br.com.logistica.model.Motorista;
 import br.com.logistica.util.Conexao;
@@ -52,5 +53,28 @@ public class ClienteDAO {
             }
         }
         return clientes;
+    }
+
+    public List<RelatorioClienteVolumeDTO> listarClienteVolume() throws SQLException{
+        List<RelatorioClienteVolumeDTO> relatorioClienteVolumeDTOS = new ArrayList<>();
+        String command = """
+                SELECT Cliente.nome, SUM(Pedido.volume_m3)
+                FROM Cliente
+                JOIN Pedido ON Cliente.id = Pedido.cliente_id
+                WHERE Pedido.status = 'ENTREGUE'
+                GROUP BY Cliente.id
+                ORDER BY SUM(Pedido.volume_m3) DESC;
+                """;
+        try (Connection conn = Conexao.conectar()) {
+            PreparedStatement stmt = conn.prepareStatement(command);
+            ResultSet rs = stmt.executeQuery();
+            while (rs.next()) {
+                relatorioClienteVolumeDTOS.add(new RelatorioClienteVolumeDTO(
+                        rs.getString("nome"),
+                        rs.getDouble("SUM(Pedido.volume_m3)")
+                ));
+            }
+        }
+        return relatorioClienteVolumeDTOS;
     }
 }

@@ -32,6 +32,11 @@ public class Pedido {
         this.status = status;
     }
 
+    public Pedido(String status, int id) {
+        this.status = status;
+        this.id = id;
+    }
+
     public int getId() {
         return id;
     }
@@ -78,5 +83,10 @@ public class Pedido {
 
     public void setStatus(String status) {
         this.status = status;
+    }
+
+    @Override
+    public String toString() {
+        return "\nID: " + getId() + "\nCLIENTE ID: " + getClienteId() + "\nDATA PEDIDO: " + getDataPedido() + "\nVOLUME M³: " + getVolumeM3() + "\nPESO KG: " + getPesoKg() + "\nSTATUS: " + getStatus() + "\n<>---------------------------<>";
     }
 }

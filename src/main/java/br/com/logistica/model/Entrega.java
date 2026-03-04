@@ -28,6 +28,19 @@ public class Entrega {
         this.status = status;
     }
 
+    public Entrega(int pedidoId, int motoristaId, Timestamp dataSaida, String status) {
+        this.pedidoId = pedidoId;
+        this.motoristaId = motoristaId;
+        this.dataSaida = dataSaida;
+        this.status = status;
+    }
+
+    public Entrega(Timestamp dataEntrega, String status, int id) {
+        this.id = id;
+        this.dataEntrega = dataEntrega;
+        this.status = status;
+    }
+
     public int getId() {
         return id;
     }
@@ -74,5 +87,10 @@ public class Entrega {
 
     public void setStatus(String status) {
         this.status = status;
+    }
+
+    @Override
+    public String toString() {
+        return "\nID: " + getId() + "\nPEDIDO ID: " + getPedidoId() +"\nMOTORISTA ID: " + getMotoristaId() +"\nDATA SAIDA: " + getDataSaida() +"\nDATA ENTREGA: " + getDataEntrega() +"\nSTATUS: " + getStatus() + "\n<>---------------------------<>";
     }
 }
