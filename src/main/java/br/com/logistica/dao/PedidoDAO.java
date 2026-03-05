@@ -121,7 +121,13 @@ public class PedidoDAO {
             ResultSet rs = stmt.executeQuery();
             while (rs.next()) {
                 buscarPedidoCPFDTOS.add(new BuscarPedidoCPFDTO(
-
+                    rs.getString("nome"),
+                    rs.getString("cpf_cnpj"),
+                    rs.getInt("id"),
+                    rs.getTimestamp("data_pedido"),
+                    rs.getDouble("volume_m3"),
+                    rs.getInt("peso_kg"),
+                    rs.getString("status")
                 ));
             }
         }

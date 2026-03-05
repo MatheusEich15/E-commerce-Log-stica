@@ -551,9 +551,10 @@ public class Main {
             System.out.println(cliente.toStringBasico());
         }
         System.out.println("Insira o CPF do cliente: ");
+        SC.nextLine();
         String CPF = SC.nextLine();
         try {
-            buscarPedidoCPFDTOS = PEDIDODAO.buscarPedidoCPF();
+            buscarPedidoCPFDTOS = PEDIDODAO.buscarPedidoCPF(CPF);
         } catch (Exception e) {
             System.out.println("Erro ao conectar com o banco de dados!");
             e.printStackTrace();
